@@ -83,6 +83,23 @@ class AuthenticationTest extends TestCase
     $response->assertStatus(422);
   }
 
+  public function test_login_endpoint_is_rate_limited(): void
+  {
+    for ($i = 0; $i < 6; $i++) {
+      $this->postJson('/api/login', [
+        'email' => 'test@example.com',
+        'password' => 'password123'
+      ]);
+    }
+
+    $response = $this->postJson('/api/login', [
+      'email' => 'test@example.com',
+      'password' => 'password123'
+    ]);
+
+    $response->assertStatus(429);
+  }
+
   public function test_authenticated_user_can_retrieve_user(): void
   {
     $user = User::factory()->create();
@@ -99,20 +116,20 @@ class AuthenticationTest extends TestCase
   }
 
   public function test_user_can_logout(): void
-    {
-        $user = User::factory()->create();
-        
-        $response = $this->actingAs($user)
-            ->postJson('/api/logout');
+  {
+    $user = User::factory()->create();
 
-        $response->assertOk()
-            ->assertJson([
-                'message' => 'Logged out successfully'
-            ]);
+    $response = $this->actingAs($user)
+      ->postJson('/api/logout');
 
-        $this->refreshApplication();
-        
-        $this->getJson('/api/user')
-            ->assertUnauthorized();
-    }
+    $response->assertOk()
+      ->assertJson([
+        'message' => 'Logged out successfully'
+      ]);
+
+    $this->refreshApplication();
+
+    $this->getJson('/api/user')
+      ->assertUnauthorized();
+  }
 }
