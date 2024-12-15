@@ -1,18 +1,12 @@
-const animate = require("tailwindcss-animate")
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  safelist: ["dark"],
-  prefix: "",
-  
   content: [
-    "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
-    "./storage/framework/views/*.php",
-    "./resources/views/**/*.blade.php",
-    "./resources/js/**/*.{ts,tsx,vue}",
+    './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+    './storage/framework/views/*.php',
+    './resources/views/**/*.blade.php',
+    './resources/**/*.{vue,js,ts,jsx,tsx}',
   ],
-  
   theme: {
     container: {
       center: true,
@@ -89,5 +83,5 @@ module.exports = {
       },
     },
   },
-  plugins: [animate],
+  plugins: [require("tailwindcss-animate")],
 }
