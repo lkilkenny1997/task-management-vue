@@ -13,6 +13,7 @@ import axios from 'axios'
 import { 
   CalendarDays, 
   CheckCircle2, 
+  Trash2,
 import { formatDate } from '@/lib/utils'
 import type { Task } from '@/types'
 
@@ -57,6 +58,24 @@ const toggleComplete = async (task: Task) => {
   }
 }
 
+const deleteTask = async (taskId: number) => {
+  if (!confirm('Are you sure you want to delete this task?')) return
+  
+  try {
+    await axios.delete(`/api/tasks/${taskId}`)
+    tasks.value = tasks.value.filter(task => task.id !== taskId)
+    toast({
+      title: "Task deleted",
+      description: "The task has been deleted successfully",
+    })
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Failed to delete task",
+      variant: "destructive",
+    })
+  }
+}
 const getCategoryColor = (category: string) => {
   const colors = {
     work: 'bg-blue-100 text-blue-800',
@@ -64,6 +83,8 @@ const getCategoryColor = (category: string) => {
     urgent: 'bg-red-100 text-red-800'
   }
   return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800'
+}
+
 onMounted(fetchTasks)
 </script>
 
@@ -94,6 +115,9 @@ onMounted(fetchTasks)
         >
           <div class="flex items-start justify-between space-x-4">
             <div class="flex items-start space-x-4">
+              <Button
+                variant="ghost"
+                size="icon"
                 @click="toggleComplete(task)"
                 :class="task.completed ? 'text-green-500' : 'text-muted-foreground'"
               >
@@ -113,6 +137,9 @@ onMounted(fetchTasks)
                 >
                   {{ task.description }}
                 </p>
+                <div class="mt-2 flex items-center space-x-4 text-sm">
+                  <span :class="['rounded-full px-2 py-1 text-xs', getCategoryColor(task.category)]">
+                    
                     {{ task.category }}
                   </span>
                   <span class="flex items-center text-muted-foreground">
@@ -123,11 +150,14 @@ onMounted(fetchTasks)
               </div>
             </div>
 
+            <div class="flex space-x-2">
+              <Button variant="ghost" size="icon" @click="editTask(task)">
                 <Edit class="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="icon" @click="deleteTask(task.id)">
                 <Trash2 class="h-4 w-4" />
               </Button>
+            </div>
           </div>
         </div>
       </div>
