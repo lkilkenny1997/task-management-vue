@@ -1,46 +1,27 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useAuthStore } from './stores/auth'
-import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/js/stores/auth'
+import AppNav from '@/components/AppNav.vue'
+import { Toaster } from '@/components/ui/toast'
 
 const auth = useAuthStore()
-const router = useRouter()
 
 onMounted(async () => {
   await auth.init()
 })
-
-const logout = async () => {
-  await auth.logout()
-  router.push('/login')
-}
 </script>
 
 <template>
-  <div v-if="!auth.initializing" class="min-h-screen bg-gray-100">
-    <nav v-if="auth.isAuthenticated" class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex">
-            <RouterLink :to="{ name: 'tasks' }" class="px-3 py-2 rounded-md text-sm font-medium">
-              Tasks
-            </RouterLink>
-          </div>
-          <div class="flex items-center">
-            <button @click="logout" class="px-3 py-2 rounded-md text-sm font-medium text-red-600">
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <RouterView></RouterView>
+  <div v-if="!auth.initializing" class="min-h-screen bg-background">
+    <AppNav v-if="auth.isAuthenticated" />
+    
+    <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <RouterView />
     </main>
+    
+    <Toaster />
   </div>
   <div v-else class="min-h-screen flex items-center justify-center">
-    <div class="text-gray-500">Loading...</div>
+    <div class="text-muted-foreground">Loading...</div>
   </div>
 </template>
-
