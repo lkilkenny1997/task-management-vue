@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import type { User } from '../../types';
+import { useAuth } from '@/composables/useAuth';
 
 interface AuthState {
   user: User | null;
@@ -80,13 +81,20 @@ export const useAuthStore = defineStore('auth', {
       this.initialising = true;
       try {
         await axios.get('/sanctum/csrf-cookie');
-        await this.getUser();
-      } catch (error) {
-        this.user = null;
-        this.isAuthenticated = false;
       } finally {
         this.initialising = false;
       }
     },
-  },
+
+    async checkAuth() {
+      try {
+        await this.getUser();
+        return true;
+      } catch (error) {
+        this.user = null;
+        this.isAuthenticated = false;
+        return false;
+      }
+    }
+  }
 });

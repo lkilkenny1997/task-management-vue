@@ -51,13 +51,17 @@ router.beforeEach(async (to, from, next) => {
         });
     }
 
-    // Handle protected routes
-    if (to.meta.requiresAuth && !auth.isAuthenticated) {
-        return next({ name: 'login' });
-    }
-
+    // For guest-only routes, redirect to tasks if already authenticated
     if (to.meta.guestOnly && auth.isAuthenticated) {
         return next({ name: 'tasks' });
+    }
+
+    // For protected routes, check auth status and redirect to login if not authenticated
+    if (to.meta.requiresAuth) {
+        const isAuthenticated = await auth.checkAuth();
+        if (!isAuthenticated) {
+            return next({ name: 'login' });
+        }
     }
 
     next();
