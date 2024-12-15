@@ -10,6 +10,10 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import axios from 'axios'
+import { 
+  CalendarDays, 
+  CheckCircle2, 
+import { formatDate } from '@/lib/utils'
 import type { Task } from '@/types'
 
 const { toast } = useToast()
@@ -34,6 +38,32 @@ const fetchTasks = async () => {
   }
 }
 
+const toggleComplete = async (task: Task) => {
+  try {
+    await axios.put(`/api/tasks/${task.id}`, {
+      completed: !task.completed
+    })
+    task.completed = !task.completed
+    toast({
+      title: task.completed ? "Task completed" : "Task uncompleted",
+      description: task.title,
+    })
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Failed to update task status",
+      variant: "destructive",
+    })
+  }
+}
+
+const getCategoryColor = (category: string) => {
+  const colors = {
+    work: 'bg-blue-100 text-blue-800',
+    personal: 'bg-green-100 text-green-800',
+    urgent: 'bg-red-100 text-red-800'
+  }
+  return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800'
 onMounted(fetchTasks)
 </script>
 
@@ -64,6 +94,12 @@ onMounted(fetchTasks)
         >
           <div class="flex items-start justify-between space-x-4">
             <div class="flex items-start space-x-4">
+                @click="toggleComplete(task)"
+                :class="task.completed ? 'text-green-500' : 'text-muted-foreground'"
+              >
+                <CheckCircle2 class="h-5 w-5" />
+              </Button>
+
               <div>
                 <h3 
                   class="font-medium"
@@ -77,8 +113,21 @@ onMounted(fetchTasks)
                 >
                   {{ task.description }}
                 </p>
+                    {{ task.category }}
+                  </span>
+                  <span class="flex items-center text-muted-foreground">
+                    <Clock class="mr-1 h-3 w-3" />
+                    {{ formatDate(task.deadline) }}
+                  </span>
+                </div>
               </div>
             </div>
+
+                <Edit class="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" @click="deleteTask(task.id)">
+                <Trash2 class="h-4 w-4" />
+              </Button>
           </div>
         </div>
       </div>
