@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, Filter, ArrowUpDown, X, ChevronDown } from 'lucide-vue-next'
@@ -20,6 +21,25 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: typeof props.modelValue): void
 }>()
 
+const searchInput = ref(props.modelValue.search)
+
+const debouncedSearch = useDebounceFn((value: string) => {
+  emit('update:modelValue', {
+    ...props.modelValue,
+    search: value
+  })
+}, 500)
+
+watch(searchInput, (newValue) => {
+  debouncedSearch(newValue)
+})
+
+watch(() => props.modelValue.search, (newValue) => {
+  if (newValue !== searchInput.value) {
+    searchInput.value = newValue
+  }
+})
+
 const deadlineOptions = [
   { value: '', label: 'All' },
   { value: 'overdue', label: 'Overdue' },
@@ -36,6 +56,8 @@ const sortOptions = [
 ]
 
 const clearFilters = () => {
+  searchInput.value = ''
+  
   emit('update:modelValue', {
     search: '',
     category: '',
@@ -107,7 +129,7 @@ const updateFilter = (key: string, value: string) => {
       <div class="flex items-center justify-between gap-4">
         <div class="flex-1 relative">
           <Input
-            v-model="modelValue.search"
+            v-model="searchInput"
             placeholder="Search tasks..."
             class="pr-8"
           />
