@@ -178,7 +178,7 @@ onMounted(fetchTasks);
 
 <template>
   <div class="space-y-6">
-    <TaskFilters v-if="tasks.length > 0" v-model="filters" />
+    <TaskFilters v-model="filters" />
 
     <Card class="h-[calc(100vh-18rem)]">
       <CardHeader class="sticky top-0 z-10 bg-background border-b">
