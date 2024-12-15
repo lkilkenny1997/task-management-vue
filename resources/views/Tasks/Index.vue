@@ -9,11 +9,16 @@ import {
   CardTitle 
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import TaskFormModal from './TaskFormModal.vue'
 import axios from 'axios'
 import { 
   CalendarDays, 
   CheckCircle2, 
+  Clock, 
+  Edit, 
+  Plus, 
   Trash2,
+} from 'lucide-vue-next'
 import { formatDate } from '@/lib/utils'
 import type { Task } from '@/types'
 
@@ -76,6 +81,45 @@ const deleteTask = async (taskId: number) => {
     })
   }
 }
+
+const editTask = (task: Task) => {
+  editingTask.value = task
+  showTaskForm.value = true
+}
+
+const saveTask = async (taskData: Partial<Task>) => {
+  try {
+    if (editingTask.value) {
+      const response = await axios.put(`/api/tasks/${editingTask.value.id}`, taskData)
+      const index = tasks.value.findIndex(t => t.id === editingTask.value!.id)
+      tasks.value[index] = response.data.data.task
+      toast({
+        title: "Task updated",
+        description: "The task has been updated successfully",
+      })
+    } else {
+      const response = await axios.post('/api/tasks', taskData)
+      tasks.value.push(response.data.data.task)
+      toast({
+        title: "Task created",
+        description: "The task has been created successfully",
+      })
+    }
+    closeTaskForm()
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Failed to save task",
+      variant: "destructive",
+    })
+  }
+}
+
+const closeTaskForm = () => {
+  showTaskForm.value = false
+  editingTask.value = null
+}
+
 const getCategoryColor = (category: string) => {
   const colors = {
     work: 'bg-blue-100 text-blue-800',
@@ -92,10 +136,14 @@ onMounted(fetchTasks)
   <Card>
     <CardHeader>
       <div class="flex items-center justify-between">
-        <div class="space-y-2">
+        <div>
           <CardTitle>Tasks</CardTitle>
           <CardDescription>Manage your tasks and track their progress</CardDescription>
         </div>
+        <Button @click="showTaskForm = true">
+          <Plus class="mr-2 h-4 w-4" />
+          Add Task
+        </Button>
       </div>
     </CardHeader>
     <CardContent>
@@ -163,4 +211,11 @@ onMounted(fetchTasks)
       </div>
     </CardContent>
   </Card>
+
+  <TaskFormModal 
+    v-if="showTaskForm"
+    :task="editingTask"
+    @close="closeTaskForm"
+    @save="saveTask"
+  />
 </template>
