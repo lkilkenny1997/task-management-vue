@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useToast } from '@/components/ui/toast'
 import { 
   Card, 
@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import TaskFormModal from './TaskFormModal.vue'
+import TaskFilters from './TaskFilters.vue'
 import axios from 'axios'
 import { 
   CalendarDays, 
@@ -28,10 +29,33 @@ const loading = ref(true)
 const showTaskForm = ref(false)
 const editingTask = ref<Task | null>(null)
 
+const filters = ref({
+  search: '',
+  category: '',
+  completed: '',
+  deadline: '',
+  sort_by: 'deadline',
+  sort_direction: 'asc'
+})
+
+watch(filters, () => {
+  fetchTasks()
+}, { deep: true })
+
 const fetchTasks = async () => {
-  try {
+    try {
     loading.value = true
-    const response = await axios.get('/api/tasks')
+
+    // Build query parameters from filters
+    const params = new URLSearchParams()
+    if (filters.value.search) params.append('search', filters.value.search)
+    if (filters.value.category) params.append('category', filters.value.category)
+    if (filters.value.completed) params.append('completed', filters.value.completed)
+    if (filters.value.deadline) params.append('deadline', filters.value.deadline)
+    if (filters.value.sort_by) params.append('sort_by', filters.value.sort_by)
+    if (filters.value.sort_direction) params.append('sort_direction', filters.value.sort_direction)
+
+    const response = await axios.get(`/api/tasks?${params.toString()}`)
     tasks.value = response.data.tasks
   } catch (error) {
     toast({
@@ -106,6 +130,7 @@ const saveTask = async (taskData: Partial<Task>) => {
       })
     }
     closeTaskForm()
+    await fetchTasks() 
   } catch (error) {
     toast({
       title: "Error",
@@ -133,6 +158,8 @@ onMounted(fetchTasks)
 </script>
 
 <template>
+  <TaskFilters v-model="filters" />
+
   <Card>
     <CardHeader>
       <div class="flex items-center justify-between">

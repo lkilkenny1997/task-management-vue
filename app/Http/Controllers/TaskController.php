@@ -14,11 +14,11 @@ class TaskController extends Controller
   {
     $tasks = $request->user()
       ->tasks()
-      ->when($request->title, function ($query, $title) {
-        return $query->where('title', 'like', '%' . $title . '%');
-      })
-      ->when($request->description, function ($query, $description) {
-        return $query->where('description', 'like', '%' . $description . '%');
+      ->when($request->search, function ($query, $search) {
+        return $query->where(function ($query) use ($search) {
+          $query->where('title', 'like', "%{$search}%")
+            ->orWhere('description', 'like', "%{$search}%");
+        });
       })
       ->when($request->category, function ($query, $category) {
         return $query->where('category', $category);
@@ -26,7 +26,23 @@ class TaskController extends Controller
       ->when($request->has('completed'), function ($query) use ($request) {
         return $query->where('completed', filter_var($request->completed, FILTER_VALIDATE_BOOLEAN));
       })
-      ->orderBy('deadline')
+      ->when($request->deadline, function ($query, $deadline) {
+        return match ($deadline) {
+          'overdue' => $query->where('deadline', '<', now())->where('completed', false),
+          'today' => $query->whereDate('deadline', today()),
+          'week' => $query->whereBetween('deadline', [now(), now()->endOfWeek()]),
+          'month' => $query->whereBetween('deadline', [now(), now()->endOfMonth()]),
+          default => $query
+        };
+      })
+      ->when($request->sort_by && $request->sort_direction, function ($query) use ($request) {
+        return $query->orderBy(
+          $request->sort_by,
+          $request->sort_direction === 'desc' ? 'desc' : 'asc'
+        );
+      }, function ($query) {
+        return $query->orderBy('deadline', 'asc');
+      })
       ->get();
 
     return response()->json(['tasks' => $tasks]);
