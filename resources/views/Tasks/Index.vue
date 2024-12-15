@@ -1,157 +1,195 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { useToast } from '@/components/ui/toast'
-import { useFilterQuery } from '@/composables/useFilterQuery'
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import TaskFormModal from './TaskFormModal.vue'
-import TaskFilters from './TaskFilters.vue'
-import axios from 'axios'
-import { 
-  CalendarDays, 
-  CheckCircle2, 
-  Clock, 
-  Edit, 
-  Plus, 
+import { ref, onMounted, watch } from "vue";
+import { useToast } from "@/components/ui/toast";
+import { useFilterQuery } from "@/composables/useFilterQuery";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import TaskFormModal from "./TaskFormModal.vue";
+import TaskFilters from "./TaskFilters.vue";
+import axios from "axios";
+import {
+  CalendarDays,
+  CheckCircle2,
+  Clock,
+  Edit,
+  Plus,
   Trash2,
-} from 'lucide-vue-next'
-import { formatDate } from '@/lib/utils'
-import type { Task } from '@/types'
+  Briefcase,
+  Home,
+  AlertOctagon,
+  PaperclipIcon,
+} from "lucide-vue-next";
+import { formatDate } from "@/lib/utils";
+import type { Task } from "@/types";
 
-const { toast } = useToast()
-const tasks = ref<Task[]>([])
-const loading = ref(true)
-const showTaskForm = ref(false)
-const editingTask = ref<Task | null>(null)
+const { toast } = useToast();
+const tasks = ref<Task[]>([]);
+const loading = ref(true);
+const showTaskForm = ref(false);
+const editingTask = ref<Task | null>(null);
 
 const { filters } = useFilterQuery({
-  search: '',
-  category: '',
-  completed: '',
-  deadline: '',
-  sort_by: 'deadline',
-  sort_direction: 'asc'
-})
+  search: "",
+  category: "",
+  completed: "",
+  deadline: "",
+  sort_by: "deadline",
+  sort_direction: "asc",
+});
 
-watch(filters, () => {
-  fetchTasks()
-}, { deep: true })
+watch(
+  filters,
+  () => {
+    fetchTasks();
+  },
+  { deep: true }
+);
+
+const categoryIcons = {
+  work: Briefcase,
+  personal: Home,
+  urgent: AlertOctagon,
+};
+
+const getDeadlineStatus = (deadline: string) => {
+  const now = new Date();
+  const taskDeadline = new Date(deadline);
+  const diffTime = taskDeadline.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0)
+    return { text: "Overdue!", class: "text-destructive font-bold" };
+  if (diffDays === 0)
+    return { text: "Due Today!", class: "text-orange-500 font-bold" };
+  if (diffDays === 1)
+    return { text: "Due Tomorrow!", class: "text-yellow-500 font-bold" };
+  if (diffDays <= 7)
+    return { text: `Due in ${diffDays} days`, class: "text-blue-500" };
+  return { text: formatDate(deadline), class: "text-muted-foreground" };
+};
 
 const fetchTasks = async () => {
-    try {
-      loading.value = true
-      
-      const params = new URLSearchParams()
-      Object.entries(filters.value).forEach(([key, value]) => {
-        if (value) params.append(key, value)
-      })
-    
-      const response = await axios.get(`/api/tasks?${params.toString()}`)
-      tasks.value = response.data.tasks
+  try {
+    loading.value = true;
+
+    const params = new URLSearchParams();
+    Object.entries(filters.value).forEach(([key, value]) => {
+      if (value) params.append(key, value);
+    });
+
+    const response = await axios.get(`/api/tasks?${params.toString()}`);
+    tasks.value = response.data.tasks;
   } catch (error) {
     toast({
       title: "Error",
       description: "Failed to load tasks",
       variant: "destructive",
-    })
+    });
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const toggleComplete = async (task: Task) => {
   try {
     await axios.put(`/api/tasks/${task.id}`, {
-      completed: !task.completed
-    })
-    task.completed = !task.completed
+      completed: !task.completed,
+    });
+    task.completed = !task.completed;
     toast({
       title: task.completed ? "Task completed" : "Task uncompleted",
       description: task.title,
-    })
+    });
   } catch (error) {
     toast({
       title: "Error",
       description: "Failed to update task status",
       variant: "destructive",
-    })
+    });
   }
-}
+};
 
 const deleteTask = async (taskId: number) => {
-  if (!confirm('Are you sure you want to delete this task?')) return
-  
+  if (!confirm("Are you sure you want to delete this task?")) return;
+
   try {
-    await axios.delete(`/api/tasks/${taskId}`)
-    tasks.value = tasks.value.filter(task => task.id !== taskId)
+    await axios.delete(`/api/tasks/${taskId}`);
+    tasks.value = tasks.value.filter((task) => task.id !== taskId);
     toast({
       title: "Task deleted",
       description: "The task has been deleted successfully",
-    })
+    });
   } catch (error) {
     toast({
       title: "Error",
       description: "Failed to delete task",
       variant: "destructive",
-    })
+    });
   }
-}
+};
 
 const editTask = (task: Task) => {
-  editingTask.value = task
-  showTaskForm.value = true
-}
+  editingTask.value = task;
+  showTaskForm.value = true;
+};
 
 const saveTask = async (taskData: Partial<Task>) => {
   try {
     if (editingTask.value) {
-      const response = await axios.put(`/api/tasks/${editingTask.value.id}`, taskData)
-      const index = tasks.value.findIndex(t => t.id === editingTask.value!.id)
-      tasks.value[index] = response.data.data.task
+      const response = await axios.put(
+        `/api/tasks/${editingTask.value.id}`,
+        taskData
+      );
+      const index = tasks.value.findIndex(
+        (t) => t.id === editingTask.value!.id
+      );
+      tasks.value[index] = response.data.data.task;
       toast({
         title: "Task updated",
         description: "The task has been updated successfully",
-      })
+      });
     } else {
-      const response = await axios.post('/api/tasks', taskData)
-      tasks.value.push(response.data.data.task)
+      const response = await axios.post("/api/tasks", taskData);
+      tasks.value.push(response.data.data.task);
       toast({
         title: "Task created",
         description: "The task has been created successfully",
-      })
+      });
     }
-    closeTaskForm()
-    await fetchTasks() 
+    closeTaskForm();
+    await fetchTasks();
   } catch (error) {
     toast({
       title: "Error",
       description: "Failed to save task",
       variant: "destructive",
-    })
+    });
   }
-}
+};
 
 const closeTaskForm = () => {
-  showTaskForm.value = false
-  editingTask.value = null
-}
+  showTaskForm.value = false;
+  editingTask.value = null;
+};
 
 const getCategoryColor = (category: string) => {
   const colors = {
-    work: 'bg-blue-100 text-blue-800',
-    personal: 'bg-green-100 text-green-800',
-    urgent: 'bg-red-100 text-red-800'
-  }
-  return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800'
-}
+    work: "bg-blue-100 text-blue-800",
+    personal: "bg-green-100 text-green-800",
+    urgent: "bg-red-100 text-red-800",
+  };
+  return (
+    colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800"
+  );
+};
 
-onMounted(fetchTasks)
+onMounted(fetchTasks);
 </script>
 
 <template>
@@ -162,7 +200,8 @@ onMounted(fetchTasks)
       <div class="flex items-center justify-between">
         <div class="space-y-2">
           <CardTitle>Tasks</CardTitle>
-          <CardDescription>Manage your tasks and track their progress</CardDescription>
+          <CardDescription>Manage your tasks and track their
+            progress</CardDescription>
         </div>
         <Button @click="showTaskForm = true">
           <Plus class="mr-2 h-4 w-4" />
@@ -180,43 +219,42 @@ onMounted(fetchTasks)
       </div>
 
       <div v-else class="divide-y">
-        <div
-          v-for="task in tasks"
-          :key="task.id"
-          class="py-4 first:pt-0 last:pb-0"
-        >
+        <div v-for="task in tasks" :key="task.id" class="py-4 first:pt-0 last:pb-0">
           <div class="flex items-start justify-between space-x-4">
             <div class="flex items-start space-x-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                @click="toggleComplete(task)"
-                :class="task.completed ? 'text-green-500' : 'text-muted-foreground'"
-              >
+              <Button variant="ghost" size="icon" @click="toggleComplete(task)" :class="task.completed
+                  ? 'text-green-500'
+                  : 'text-muted-foreground'
+                ">
                 <CheckCircle2 class="h-5 w-5" />
               </Button>
 
               <div>
-                <h3 
-                  class="font-medium"
-                  :class="{ 'line-through text-muted-foreground': task.completed }"
-                >
+                <h3 class="font-medium" :class="{
+                  'line-through text-muted-foreground':
+                    task.completed,
+                }">
                   {{ task.title }}
                 </h3>
-                <p 
-                  class="mt-1 text-sm text-muted-foreground"
-                  :class="{ 'line-through': task.completed }"
-                >
+                <p class="mt-1 text-sm text-muted-foreground" :class="{ 'line-through': task.completed }">
                   {{ task.description }}
                 </p>
                 <div class="mt-2 flex items-center space-x-4 text-sm">
-                  <span :class="['rounded-full px-2 py-1 text-xs', getCategoryColor(task.category)]">
-                    
+                  <span :class="[
+                    'rounded-full px-2.5 py-1 text-xs font-medium flex items-center gap-1.5',
+                    getCategoryColor(task.category),
+                  ]">
+                    <component :is="categoryIcons[task.category]" class="h-3.5 w-3.5" />
                     {{ task.category }}
                   </span>
-                  <span class="flex items-center text-muted-foreground">
-                    <Clock class="mr-1 h-3 w-3" />
-                    {{ formatDate(task.deadline) }}
+                  <span class="flex items-center text-sm gap-1.5" :class="getDeadlineStatus(task.deadline)
+                      .class
+                    ">
+                    <Clock class="h-3.5 w-3.5" />
+                    {{
+                      getDeadlineStatus(task.deadline)
+                        .text
+                    }}
                   </span>
                 </div>
               </div>
@@ -236,10 +274,5 @@ onMounted(fetchTasks)
     </CardContent>
   </Card>
 
-  <TaskFormModal 
-    v-if="showTaskForm"
-    :task="editingTask"
-    @close="closeTaskForm"
-    @save="saveTask"
-  />
+  <TaskFormModal v-if="showTaskForm" :task="editingTask" @close="closeTaskForm" @save="saveTask" />
 </template>
