@@ -160,7 +160,7 @@ onMounted(fetchTasks)
   <Card>
     <CardHeader>
       <div class="flex items-center justify-between">
-        <div>
+        <div class="space-y-2">
           <CardTitle>Tasks</CardTitle>
           <CardDescription>Manage your tasks and track their progress</CardDescription>
         </div>
