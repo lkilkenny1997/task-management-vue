@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { useToast } from "@/components/ui/toast";
+import { getDeadlineStatus } from "@/lib/utils";
 import { useFilterQuery } from "@/composables/useFilterQuery";
 import {
   Card,
@@ -55,23 +56,6 @@ const categoryIcons = {
   work: Briefcase,
   personal: Home,
   urgent: AlertOctagon,
-};
-
-const getDeadlineStatus = (deadline: string) => {
-  const now = new Date();
-  const taskDeadline = new Date(deadline);
-  const diffTime = taskDeadline.getTime() - now.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays < 0)
-    return { text: "Overdue!", class: "text-destructive font-bold" };
-  if (diffDays === 0)
-    return { text: "Due Today!", class: "text-orange-500 font-bold" };
-  if (diffDays === 1)
-    return { text: "Due Tomorrow!", class: "text-yellow-500 font-bold" };
-  if (diffDays <= 7)
-    return { text: `Due in ${diffDays} days`, class: "text-blue-500" };
-  return { text: formatDate(deadline), class: "text-muted-foreground" };
 };
 
 const fetchTasks = async () => {
@@ -223,8 +207,8 @@ onMounted(fetchTasks);
           <div class="flex items-start justify-between space-x-4">
             <div class="flex items-start space-x-4">
               <Button variant="ghost" size="icon" @click="toggleComplete(task)" :class="task.completed
-                  ? 'text-green-500'
-                  : 'text-muted-foreground'
+                ? 'text-green-500'
+                : 'text-muted-foreground'
                 ">
                 <CheckCircle2 class="h-5 w-5" />
               </Button>
@@ -241,20 +225,17 @@ onMounted(fetchTasks);
                 </p>
                 <div class="mt-2 flex items-center space-x-4 text-sm">
                   <span :class="[
-                    'rounded-full px-2.5 py-1 text-xs font-medium flex items-center gap-1.5',
+                    'rounded-full px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 capitalize',
                     getCategoryColor(task.category),
                   ]">
                     <component :is="categoryIcons[task.category]" class="h-3.5 w-3.5" />
                     {{ task.category }}
                   </span>
-                  <span class="flex items-center text-sm gap-1.5" :class="getDeadlineStatus(task.deadline)
-                      .class
-                    ">
+
+                  <span class="flex items-center text-sm gap-1.5"
+                    :class="getDeadlineStatus(task.deadline, task.completed).class">
                     <Clock class="h-3.5 w-3.5" />
-                    {{
-                      getDeadlineStatus(task.deadline)
-                        .text
-                    }}
+                    {{ getDeadlineStatus(task.deadline, task.completed).text }}
                   </span>
                 </div>
               </div>
