@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useToast } from '@/components/ui/toast'
+import { useFilterQuery } from '@/composables/useFilterQuery'
 import { 
   Card, 
   CardContent, 
@@ -29,7 +30,7 @@ const loading = ref(true)
 const showTaskForm = ref(false)
 const editingTask = ref<Task | null>(null)
 
-const filters = ref({
+const { filters } = useFilterQuery({
   search: '',
   category: '',
   completed: '',
@@ -44,19 +45,15 @@ watch(filters, () => {
 
 const fetchTasks = async () => {
     try {
-    loading.value = true
-
-    // Build query parameters from filters
-    const params = new URLSearchParams()
-    if (filters.value.search) params.append('search', filters.value.search)
-    if (filters.value.category) params.append('category', filters.value.category)
-    if (filters.value.completed) params.append('completed', filters.value.completed)
-    if (filters.value.deadline) params.append('deadline', filters.value.deadline)
-    if (filters.value.sort_by) params.append('sort_by', filters.value.sort_by)
-    if (filters.value.sort_direction) params.append('sort_direction', filters.value.sort_direction)
-
-    const response = await axios.get(`/api/tasks?${params.toString()}`)
-    tasks.value = response.data.tasks
+      loading.value = true
+      
+      const params = new URLSearchParams()
+      Object.entries(filters.value).forEach(([key, value]) => {
+        if (value) params.append(key, value)
+      })
+    
+      const response = await axios.get(`/api/tasks?${params.toString()}`)
+      tasks.value = response.data.tasks
   } catch (error) {
     toast({
       title: "Error",
