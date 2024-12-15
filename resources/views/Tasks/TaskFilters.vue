@@ -118,8 +118,8 @@ const updateFilter = (key: string, value: string) => {
         </div>
       </div>
 
-      <div class="flex items-center justify-between gap-4">
-        <div class="flex-1 relative">
+      <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
+        <div class="flex-1 relative w-full lg:w-auto">
           <Input v-model="searchInput" placeholder="Search tasks..." class="pr-8" />
           <Search class="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
         </div>

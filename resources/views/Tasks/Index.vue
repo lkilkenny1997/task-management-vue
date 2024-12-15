@@ -24,7 +24,6 @@ import {
   Briefcase,
   Home,
   AlertOctagon,
-  PaperclipIcon,
 } from "lucide-vue-next";
 import { formatDate } from "@/lib/utils";
 import type { Task } from "@/types";
@@ -34,6 +33,7 @@ const tasks = ref<Task[]>([]);
 const loading = ref(true);
 const showTaskForm = ref(false);
 const editingTask = ref<Task | null>(null);
+const totalTasks = ref(0);
 
 const { filters } = useFilterQuery({
   search: "",
@@ -90,6 +90,8 @@ const toggleComplete = async (task: Task) => {
       title: task.completed ? "Task completed" : "Task uncompleted",
       description: task.title,
     });
+
+    await fetchTasks();
   } catch (error) {
     toast({
       title: "Error",
@@ -168,92 +170,92 @@ const getCategoryColor = (category: string) => {
     personal: "bg-green-100 text-green-800",
     urgent: "bg-red-100 text-red-800",
   };
-  return (
-    colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800"
-  );
+  return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800";
 };
 
 onMounted(fetchTasks);
 </script>
 
 <template>
-  <TaskFilters v-model="filters" />
+  <div class="space-y-6">
+    <TaskFilters v-model="filters" />
 
-  <Card>
-    <CardHeader>
-      <div class="flex items-center justify-between">
-        <div class="space-y-2">
-          <CardTitle>Tasks</CardTitle>
-          <CardDescription>Manage your tasks and track their
-            progress</CardDescription>
-        </div>
-        <Button @click="showTaskForm = true">
-          <Plus class="mr-2 h-4 w-4" />
-          Add Task
-        </Button>
-      </div>
-    </CardHeader>
-    <CardContent>
-      <div v-if="loading" class="py-8 text-center text-muted-foreground">
-        Loading tasks...
-      </div>
-
-      <div v-else-if="tasks.length === 0" class="py-8 text-center text-muted-foreground">
-        No tasks found. Create your first task to get started!
-      </div>
-
-      <div v-else class="divide-y">
-        <div v-for="task in tasks" :key="task.id" class="py-4 first:pt-0 last:pb-0">
-          <div class="flex items-start justify-between space-x-4">
-            <div class="flex items-start space-x-4">
-              <Button variant="ghost" size="icon" @click="toggleComplete(task)" :class="task.completed
-                ? 'text-green-500'
-                : 'text-muted-foreground'
-                ">
-                <CheckCircle2 class="h-5 w-5" />
-              </Button>
-
-              <div>
-                <h3 class="font-medium" :class="{
-                  'line-through text-muted-foreground':
-                    task.completed,
-                }">
-                  {{ task.title }}
-                </h3>
-                <p class="mt-1 text-sm text-muted-foreground" :class="{ 'line-through': task.completed }">
-                  {{ task.description }}
-                </p>
-                <div class="mt-2 flex items-center space-x-4 text-sm">
-                  <span :class="[
-                    'rounded-full px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 capitalize',
-                    getCategoryColor(task.category),
-                  ]">
-                    <component :is="categoryIcons[task.category]" class="h-3.5 w-3.5" />
-                    {{ task.category }}
-                  </span>
-
-                  <span class="flex items-center text-sm gap-1.5"
-                    :class="getDeadlineStatus(task.deadline, task.completed).class">
-                    <Clock class="h-3.5 w-3.5" />
-                    {{ getDeadlineStatus(task.deadline, task.completed).text }}
-                  </span>
-                </div>
+    <Card class="h-[calc(100vh-18rem)]">
+      <CardHeader class="sticky top-0 z-10 bg-background border-b">
+        <div class="flex items-center justify-between">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <CardTitle>Tasks</CardTitle>
+              <div class="rounded-full bg-primary px-2.5 py-0.5 text-sm text-primary-foreground font-bold">
+                {{ tasks.length }}
               </div>
             </div>
+            <CardDescription>Manage your tasks and track their progress</CardDescription>
+          </div>
+          <Button @click="showTaskForm = true">
+            <Plus class="h-4 w-4" />
+            <span class="hidden lg:inline ml-2">Add Task</span>
+          </Button>
+        </div>
+      </CardHeader>
 
-            <div class="flex space-x-2">
-              <Button variant="ghost" size="icon" @click="editTask(task)">
-                <Edit class="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" @click="deleteTask(task.id)">
-                <Trash2 class="h-4 w-4" />
-              </Button>
+      <CardContent class="h-[calc(100%-105px)] overflow-y-auto">
+        <div v-if="loading" class="py-8 text-center text-muted-foreground">
+          Loading tasks...
+        </div>
+
+        <div v-else-if="tasks.length === 0" class="py-8 text-center text-muted-foreground">
+          No tasks found. Create your first task to get started!
+        </div>
+
+        <div v-else class="divide-y mt-4">
+          <div v-for="task in tasks" :key="task.id" class="py-4 first:pt-0">
+            <div class="flex items-start justify-between space-x-4">
+              <div class="flex items-start space-x-4">
+                <Button variant="ghost" size="icon" @click="toggleComplete(task)"
+                  :class="task.completed ? 'text-green-500' : 'text-muted-foreground'">
+                  <CheckCircle2 class="h-5 w-5" />
+                </Button>
+
+                <div>
+                  <h3 class="font-medium" :class="{ 'line-through text-muted-foreground': task.completed }">
+                    {{ task.title }}
+                  </h3>
+                  <p class="mt-1 text-sm text-muted-foreground" :class="{ 'line-through': task.completed }">
+                    {{ task.description }}
+                  </p>
+                  <div class="mt-2 flex items-center space-x-4 text-sm">
+                    <span :class="[
+                      'rounded-full px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 capitalize',
+                      getCategoryColor(task.category),
+                    ]">
+                      <component :is="categoryIcons[task.category]" class="h-3.5 w-3.5" />
+                      {{ task.category }}
+                    </span>
+
+                    <span class="flex items-center text-sm gap-1.5"
+                      :class="getDeadlineStatus(task.deadline, task.completed).class">
+                      <Clock class="h-3.5 w-3.5" />
+                      {{ getDeadlineStatus(task.deadline, task.completed).text }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex space-x-2">
+                <Button variant="ghost" size="icon" @click="editTask(task)">
+                  <Edit class="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" @click="deleteTask(task.id)">
+                  <Trash2 class="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </CardContent>
-  </Card>
+      </CardContent>
+    </Card>
 
-  <TaskFormModal v-if="showTaskForm" :task="editingTask" @close="closeTaskForm" @save="saveTask" />
+    <TaskFormModal v-if="showTaskForm" :task="editingTask" @close="closeTaskForm" @save="saveTask" />
+  </div>
 </template>

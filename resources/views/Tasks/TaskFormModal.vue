@@ -129,7 +129,7 @@ const handleSubmit = () => {
       </form>
 
       <DialogFooter>
-        <Button variant="outline" @click="emit('close')">Cancel</Button>
+        <Button variant="outline" @click="emit('close')" class="mt-4 lg:mt-0">Cancel</Button>
         <Button type="submit" @click="handleSubmit">
           {{ task ? 'Update' : 'Create' }}
         </Button>

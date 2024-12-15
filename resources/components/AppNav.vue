@@ -37,7 +37,7 @@ const logout = async () => {
             <span class="ml-2 text-lg font-semibold">Ascensor Task Manager</span>
           </div>
 
-          <div class="ml-10 flex items-center space-x-4">
+          <div class="ml-10 items-center space-x-4 hidden lg:flex">
             <router-link
               to="/tasks"
               class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
