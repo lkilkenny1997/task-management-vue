@@ -17,3 +17,11 @@ export interface Task {
   created_at: string;
   updated_at: string;
 }
+export interface TaskFilters {
+  search?: string
+  category?: string
+  completed?: string
+  deadline?: string
+  sort_by?: string
+  sort_direction?: string
+}

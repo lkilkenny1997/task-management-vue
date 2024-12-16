@@ -54,8 +54,6 @@ const deadlineOptions = [
 const sortOptions = [
   { value: "deadline", label: "Deadline" },
   { value: "title", label: "Title" },
-  { value: "category", label: "Category" },
-  { value: "created_at", label: "Created Date" },
 ];
 
 const clearFilters = () => {
