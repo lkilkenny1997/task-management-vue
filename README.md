@@ -179,9 +179,11 @@ resources/
 
 ### Setup
 
+```
 1.mysql -u your_username -p -e "CREATE DATABASE your-project-test;"
 2. Configure .env.testing (if it doesn't exist, copy .env.example to .env.testing)
 3.php artisan migrate --seed --env=testing
+```
 
 Backend tests can be run with:
 ```bash
