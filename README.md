@@ -1,66 +1,202 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Management Application
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A single-page application built with Laravel 11 and Vue 3, demonstrating modern web development practices and clean architecture.
 
-## About Laravel
+## Technical Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Backend
+- Laravel 11
+- Laravel Sanctum for SPA Authentication
+- MySQL/SQLite for database
+- RESTful API architecture
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Frontend
+- Vue 3 with Composition API
+- TypeScript for type safety
+- Pinia for state management
+- Vue Router for routing
+- Tailwind CSS with shadcn/ui components
+- Vite for build tooling
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Architecture Overview
 
-## Learning Laravel
+### Backend Architecture
+- Request/Response pattern with form requests for validation
+- Resource classes for API responses
+- Service layer for business logic
+- Repository pattern for data access
+- Policy-based authorisation
+- Query builder pattern for complex filters
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Frontend Architecture
+- Component-based architecture with Vue 3
+- Composables for reusable logic
+- Type-safe store management
+- Reactive state management
+- Client-side form validation
+- Custom hooks for data fetching
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Key Features
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- SPA Authentication flow
+- Task CRUD operations
+- Advanced filtering and sorting
+- Deadline tracking
+- Category management
+- Form validation
+- Toast notifications
+- Responsive design
 
-## Laravel Sponsors
+## Local Development Setup
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Prerequisites
+- PHP 8.2+
+- Composer
+- Node.js 18+
+- MySQL 8.0+ (optional - can use SQLite)
 
-### Premium Partners
+### Initial Setup
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+1. Clone the repository:
+```bash
+git clone [repository-url]
+cd [repository-name]
+```
 
-## Contributing
+2. Install PHP dependencies:
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Install Node.js dependencies:
+```bash
+yarn
+```
 
-## Code of Conduct
+4. Environment setup:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. Configure database in `.env`:
+```
+DB_CONNECTION=sqlite  # or mysql
+DB_DATABASE=storage/database.sqlite  # for SQLite
+```
 
-## Security Vulnerabilities
+6. Run migrations and seed data:
+```bash
+php artisan migrate --seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Development Server
 
-## License
+1. Start Laravel development server:
+```bash
+php artisan serve
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2. Start Vite development server:
+```bash
+yarn dev
+```
+
+The application will be available at `http://localhost:8000`
+
+### Default Test Account
+```
+Email: test@example.com
+Password: password
+```
+
+## API Endpoints
+
+### Authentication
+```
+POST   /api/register     # Register new user
+POST   /api/login        # User login
+POST   /api/logout       # User logout
+GET    /api/user         # Get authenticated user
+```
+
+### Tasks
+```
+GET    /api/tasks        # List tasks (with filters)
+POST   /api/tasks        # Create task
+GET    /api/tasks/{id}   # Get task
+PUT    /api/tasks/{id}   # Update task
+DELETE /api/tasks/{id}   # Delete task
+```
+
+## Task Filtering
+
+The tasks endpoint supports several query parameters:
+
+```typescript
+interface TaskFilters {
+  search?: string;          // Search in title and description
+  category?: 'work' | 'personal' | 'urgent';
+  completed?: boolean;
+  deadline?: 'overdue' | 'today' | 'week' | 'month';
+  sort_by?: string;         // deadline|title
+  sort_direction?: 'asc' | 'desc';
+}
+```
+
+## Code Organisation
+
+```
+app/
+├── Http/
+│   ├── Controllers/        # Request handlers
+│   └── Requests/          # Form request validation
+├── Models/                # Eloquent models
+└── Policies/             # Authorisation policies
+
+resources/
+├── components/           # Vue components
+├── composables/         # Vue composables
+├── services/            # API Service layer
+├── views/               # Page components
+├── stores/             # Pinia stores
+└── types/              # TypeScript types
+```
+
+## Design Decisions
+
+1. **SPA Architecture**: Full SPA implementation with Laravel Sanctum for seamless authentication and better user experience.
+
+2. **TypeScript**: Used for enhanced type safety and better developer experience.
+
+3. **Composables**: Extracted reusable logic into composables for better code organisation.
+
+4. **Form Requests**: Dedicated request classes for robust validation and clean controllers.
+
+5. **Task Filtering**: Implemented complex filtering system using query builder pattern.
+
+## Testing
+
+### Setup
+
+1.mysql -u your_username -p -e "CREATE DATABASE your-project-test;"
+2. Configure .env.testing (if it doesn't exist, copy .env.example to .env.testing)
+3.php artisan migrate --seed --env=testing
+
+Backend tests can be run with:
+```bash
+composer test
+```
+
+Frontend tests can be run with:
+```bash
+yarn test
+```
+
+## Additional Notes
+
+- The application uses Laravel Sanctum's SPA authentication
+- CSRF protection is enabled
+- All API endpoints are protected by authentication except login/register
+- Task ownership is enforced through policies
+- Validation errors are handled consistently across the application
