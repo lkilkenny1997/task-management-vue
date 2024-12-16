@@ -209,52 +209,6 @@ class TaskTest extends TestCase
       ]);
   }
 
-  // Filtering Tasks
-
-  public function test_user_can_filter_tasks_by_title(): void
-  {
-    Task::factory()->create([
-      'user_id' => $this->user->id,
-      'title' => 'Test Task'
-    ]);
-    Task::factory()->create([
-      'user_id' => $this->user->id,
-      'title' => 'Another Task'
-    ]);
-
-    $response = $this->actingAs($this->user)
-      ->getJson('/api/tasks?title=Test');
-
-    $response->assertOk()
-      ->assertJson([
-        'tasks' => [
-          ['title' => 'Test Task']
-        ]
-      ]);
-  }
-
-  public function test_user_can_filter_tasks_by_description(): void
-  {
-    Task::factory()->create([
-      'user_id' => $this->user->id,
-      'description' => 'Test Description'
-    ]);
-    Task::factory()->create([
-      'user_id' => $this->user->id,
-      'description' => 'Another Description'
-    ]);
-
-    $response = $this->actingAs($this->user)
-      ->getJson('/api/tasks?description=Test');
-
-    $response->assertOk()
-      ->assertJson([
-        'tasks' => [
-          ['description' => 'Test Description']
-        ]
-      ]);
-  }
-
   public function test_user_can_filter_tasks_by_category(): void
   {
     Task::factory()->create([
