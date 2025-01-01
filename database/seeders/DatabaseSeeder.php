@@ -8,17 +8,17 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-  /**
-   * Seed the application's database.
-   */
-  public function run(): void
-  {
-    User::factory()->create([
-      'name' => 'Test User',
-      'email' => 'test@example.com',
-      'password' => bcrypt('password'),
-    ]);
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        User::factory()->create([
+          'name' => 'Test User',
+          'email' => 'test@example.com',
+          'password' => bcrypt('password'),
+        ]);
 
-    $this->call(TaskSeeder::class);
-  }
+        $this->call(TaskSeeder::class);
+    }
 }

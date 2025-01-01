@@ -10,20 +10,20 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TaskFactory extends Factory
 {
-  /**
-   * Define the model's default state.
-   *
-   * @return array<string, mixed>
-   */
-  public function definition(): array
-  {
-    return [
-      'user_id' => User::factory(),
-      'title' => fake()->sentence(),
-      'description' => fake()->paragraph(),
-      'category' => fake()->randomElement(['work', 'personal', 'urgent']),
-      'deadline' => fake()->dateTimeBetween('now', '+1 month'),
-      'completed' => false,
-    ];
-  }
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+          'user_id' => User::factory(),
+          'title' => fake()->sentence(),
+          'description' => fake()->paragraph(),
+          'category' => fake()->randomElement(['work', 'personal', 'urgent']),
+          'deadline' => fake()->dateTimeBetween('now', '+1 month'),
+          'completed' => false,
+        ];
+    }
 }

@@ -20,13 +20,13 @@ class UpdateTaskRequest extends FormRequest
             'category' => [
                 'sometimes',
                 'required',
-                Rule::in(['work', 'personal', 'urgent'])
+                Rule::in(['work', 'personal', 'urgent']),
             ],
             'deadline' => [
                 'sometimes',
                 'required',
                 'date',
-                'after:now'
+                'after:now',
             ],
             'completed' => ['sometimes', 'required', 'boolean'],
         ];
@@ -39,8 +39,7 @@ class UpdateTaskRequest extends FormRequest
             'title.max' => 'Task title cannot be more than 255 characters',
             'category.in' => 'Category must be one of: work, personal, urgent',
             'deadline.after' => 'Deadline must be a future date and time',
-            'completed.boolean' => 'Completed status must be true or false'
+            'completed.boolean' => 'Completed status must be true or false',
         ];
     }
 }
-

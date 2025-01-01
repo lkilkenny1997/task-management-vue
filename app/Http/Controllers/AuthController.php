@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -28,7 +28,7 @@ class AuthController extends Controller
         
         return response()->json([
             'user' => $user,
-            'message' => 'Registration successful'
+            'message' => 'Registration successful',
         ], 201);
     }
 
@@ -39,7 +39,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (! Auth::attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -49,7 +49,7 @@ class AuthController extends Controller
 
         return response()->json([
             'user' => $user,
-            'message' => 'Login successful'
+            'message' => 'Login successful',
         ]);
     }
 
@@ -58,7 +58,7 @@ class AuthController extends Controller
         Auth::guard('web')->logout();
         
         return response()->json([
-            'message' => 'Logged out successfully'
+            'message' => 'Logged out successfully',
         ]);
     }
 

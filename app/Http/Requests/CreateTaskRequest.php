@@ -19,12 +19,12 @@ class CreateTaskRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'category' => [
                 'required',
-                Rule::in(['work', 'personal', 'urgent'])
+                Rule::in(['work', 'personal', 'urgent']),
             ],
             'deadline' => [
                 'required',
                 'date',
-                'after:now'
+                'after:now',
             ],
         ];
     }
@@ -37,8 +37,7 @@ class CreateTaskRequest extends FormRequest
             'category.required' => 'A task category is required',
             'category.in' => 'Category must be one of: work, personal, urgent',
             'deadline.required' => 'A task deadline is required',
-            'deadline.after' => 'Deadline must be a future date and time'
+            'deadline.after' => 'Deadline must be a future date and time',
         ];
     }
 }
-
