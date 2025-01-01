@@ -10,15 +10,15 @@ vi.mock('dayjs', () => {
       diff: vi.fn(() => 24),
       startOf: vi.fn().mockReturnThis(),
       endOf: vi.fn().mockReturnThis(),
-      add: vi.fn().mockReturnThis()
+      add: vi.fn().mockReturnThis(),
     })),
-    extend: vi.fn()
+    extend: vi.fn(),
   }
 })
 
 config.global.mocks = {
   $router: {
     push: vi.fn(),
-    replace: vi.fn()
-  }
+    replace: vi.fn(),
+  },
 }

@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,20 +27,20 @@ const form = ref({
   title: '',
   description: '',
   category: 'work',
-  deadline: dayjs().add(1, 'day').startOf('hour').add(1, 'hour').format('YYYY-MM-DDTHH:mm')
+  deadline: dayjs().add(1, 'day').startOf('hour').add(1, 'hour').format('YYYY-MM-DDTHH:mm'),
 })
 
 const errors = ref({
   title: '',
   category: '',
-  deadline: ''
+  deadline: '',
 })
 
 onMounted(() => {
   if (props.task) {
     form.value = {
       ...props.task,
-      deadline: dayjs(props.task.deadline).format('YYYY-MM-DDTHH:mm')
+      deadline: dayjs(props.task.deadline).format('YYYY-MM-DDTHH:mm'),
     }
   }
 })
@@ -44,7 +50,7 @@ const validateForm = () => {
   errors.value = {
     title: '',
     category: '',
-    deadline: ''
+    deadline: '',
   }
 
   if (!form.value.title.trim()) {
@@ -85,11 +91,7 @@ const handleSubmit = () => {
       <form @submit.prevent="handleSubmit" class="space-y-4 py-4">
         <div class="space-y-2">
           <Label for="title">Title</Label>
-          <Input
-            id="title"
-            v-model="form.title"
-            placeholder="Task title"
-          />
+          <Input id="title" v-model="form.title" placeholder="Task title" />
           <p v-if="errors.title" class="text-sm text-destructive">{{ errors.title }}</p>
         </div>
 
@@ -119,11 +121,7 @@ const handleSubmit = () => {
 
         <div class="space-y-2">
           <Label for="deadline">Deadline</Label>
-          <Input
-            id="deadline"
-            v-model="form.deadline"
-            type="datetime-local"
-          />
+          <Input id="deadline" v-model="form.deadline" type="datetime-local" />
           <p v-if="errors.deadline" class="text-sm text-destructive">{{ errors.deadline }}</p>
         </div>
       </form>

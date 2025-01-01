@@ -6,7 +6,14 @@ import { useToast } from '@/components/ui/toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Toaster } from '@/components/ui/toast'
 import { Loader2Icon } from 'lucide-vue-next'
 
@@ -17,14 +24,14 @@ const loading = ref(false)
 const errors = reactive({
   name: '',
   email: '',
-  password: ''
+  password: '',
 })
 
 const form = reactive({
   name: '',
   email: '',
   password: '',
-  password_confirmation: ''
+  password_confirmation: '',
 })
 
 const handleSubmit = async () => {
@@ -33,14 +40,14 @@ const handleSubmit = async () => {
     errors.name = ''
     errors.email = ''
     errors.password = ''
-    
+
     await auth.register(form)
-    
+
     toast({
-      title: "Success!",
-      description: "Your account has been created successfully.",
+      title: 'Success!',
+      description: 'Your account has been created successfully.',
     })
-    
+
     router.push({ name: 'tasks' })
   } catch (e: any) {
     if (e.response?.data?.errors) {
@@ -50,9 +57,9 @@ const handleSubmit = async () => {
       errors.password = serverErrors.password?.[0] || ''
     } else {
       toast({
-        title: "Error",
-        description: e.response?.data?.message || "An error occurred during registration.",
-        variant: "destructive",
+        title: 'Error',
+        description: e.response?.data?.message || 'An error occurred during registration.',
+        variant: 'destructive',
       })
     }
   } finally {
@@ -95,7 +102,7 @@ const handleSubmit = async () => {
             />
             <p v-if="errors.email" class="text-sm text-destructive">{{ errors.email }}</p>
           </div>
-          
+
           <div class="space-y-2">
             <Label for="password">Password</Label>
             <Input
@@ -126,12 +133,9 @@ const handleSubmit = async () => {
         </form>
       </CardContent>
       <CardFooter class="flex flex-col space-y-4">
-        <div class="text-sm text-center text-muted-foreground">
+        <div class="text-center text-sm text-muted-foreground">
           Already have an account?
-          <router-link
-            :to="{ name: 'login' }"
-            class="ml-1 text-primary hover:underline"
-          >
+          <router-link :to="{ name: 'login' }" class="ml-1 text-primary hover:underline">
             Sign in
           </router-link>
         </div>

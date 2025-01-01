@@ -35,39 +35,39 @@ export const getDeadlineStatus = (deadline: string, completed: boolean) => {
   const now = dayjs()
   const taskDeadline = dayjs(deadline)
   const diff = taskDeadline.diff(now, 'hour', true)
-  
+
   if (completed) {
     return {
       text: `Completed (Due: ${taskDeadline.format('MMM D, YYYY [at] h:mm A')})`,
-      class: 'text-green-600'
+      class: 'text-green-600',
     }
   }
 
   // overdue
   if (diff < 0) {
     if (Math.abs(diff) < 24) {
-      return { 
-        text: taskDeadline.fromNow(), 
-        class: 'text-destructive font-bold'
+      return {
+        text: taskDeadline.fromNow(),
+        class: 'text-destructive font-bold',
       }
     }
-    return { 
+    return {
       text: taskDeadline.fromNow(),
-      class: 'text-destructive font-bold' 
+      class: 'text-destructive font-bold',
     }
   }
 
   // due within 24 hours
   if (diff <= 24) {
     if (diff <= 1) {
-      return { 
-        text: 'Due in less than an hour!', 
-        class: 'text-destructive font-bold' 
+      return {
+        text: 'Due in less than an hour!',
+        class: 'text-destructive font-bold',
       }
     }
-    return { 
+    return {
       text: taskDeadline.fromNow(),
-      class: 'text-orange-500 font-bold' 
+      class: 'text-orange-500 font-bold',
     }
   }
 
@@ -78,24 +78,24 @@ export const getDeadlineStatus = (deadline: string, completed: boolean) => {
         sameDay: '[Today at] h:mm A',
         nextDay: '[Tomorrow at] h:mm A',
       }),
-      class: 'text-orange-500 font-bold'
+      class: 'text-orange-500 font-bold',
     }
   }
 
   // within a week
   if (diff <= 168) {
-    return { 
+    return {
       text: taskDeadline.calendar(null, {
         sameDay: '[Today at] h:mm A',
         nextDay: '[Tomorrow at] h:mm A',
         nextWeek: 'dddd [at] h:mm A',
       }),
-      class: 'text-blue-500' 
+      class: 'text-blue-500',
     }
   }
 
-  return { 
+  return {
     text: taskDeadline.format('MMM D, YYYY [at] h:mm A'),
-    class: 'text-muted-foreground' 
+    class: 'text-muted-foreground',
   }
 }

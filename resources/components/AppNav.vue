@@ -13,15 +13,15 @@ const logout = async () => {
   try {
     await auth.logout()
     toast({
-      title: "Success",
-      description: "You have been logged out successfully",
+      title: 'Success',
+      description: 'You have been logged out successfully',
     })
     router.push('/login')
   } catch (error) {
     toast({
-      title: "Error",
-      description: "There was a problem logging out",
-      variant: "destructive",
+      title: 'Error',
+      description: 'There was a problem logging out',
+      variant: 'destructive',
     })
   }
 }
@@ -34,14 +34,18 @@ const logout = async () => {
         <div class="flex items-center">
           <div class="flex items-center">
             <ListTodo class="h-6 w-6 text-primary" />
-            <span class="ml-2 text-lg font-semibold">Ascensor Task Manager</span>
+            <span class="ml-2 text-lg font-semibold">Task Manager</span>
           </div>
 
-          <div class="ml-10 items-center space-x-4 hidden lg:flex">
+          <div class="ml-10 hidden items-center space-x-4 lg:flex">
             <router-link
               to="/tasks"
               class="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-              :class="$route.path === '/tasks' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'"
+              :class="
+                $route.path === '/tasks'
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-muted-foreground'
+              "
             >
               Tasks
             </router-link>

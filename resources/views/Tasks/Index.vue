@@ -19,7 +19,7 @@ const { filters } = useFilterQuery({
   completed: '',
   deadline: '',
   sort_by: 'deadline',
-  sort_direction: 'asc'
+  sort_direction: 'asc',
 })
 
 const {
@@ -30,12 +30,16 @@ const {
   deleteTask,
   saveTask,
   categoryIcons,
-  getCategoryColor
+  getCategoryColor,
 } = useTasks()
 
-watch(filters, () => {
-  fetchTasks(filters.value)
-}, { deep: true })
+watch(
+  filters,
+  () => {
+    fetchTasks(filters.value)
+  },
+  { deep: true }
+)
 
 const handleSaveTask = async (taskData: Partial<Task>) => {
   await saveTask(taskData, editingTask.value?.id)
@@ -61,12 +65,14 @@ onMounted(() => fetchTasks(filters.value))
     <TaskFilters v-model="filters" />
 
     <Card class="h-[calc(100vh-18rem)]">
-      <CardHeader class="sticky top-0 z-10 bg-background border-b">
+      <CardHeader class="sticky top-0 z-10 border-b bg-background">
         <div class="flex items-center justify-between">
           <div class="space-y-2">
             <div class="flex items-center gap-3">
               <CardTitle>Tasks</CardTitle>
-              <div class="rounded-full bg-primary px-2.5 py-0.5 text-sm text-primary-foreground font-bold">
+              <div
+                class="rounded-full bg-primary px-2.5 py-0.5 text-sm font-bold text-primary-foreground"
+              >
                 {{ tasks.length }}
               </div>
             </div>
@@ -74,27 +80,25 @@ onMounted(() => fetchTasks(filters.value))
           </div>
           <Button @click="showTaskForm = true">
             <Plus class="h-4 w-4" />
-            <span class="hidden lg:inline ml-2">Add Task</span>
+            <span class="ml-2 hidden lg:inline">Add Task</span>
           </Button>
         </div>
       </CardHeader>
 
       <CardContent class="h-[calc(100%-105px)] overflow-y-auto">
-        <div v-if="loading" class="py-8 text-center text-muted-foreground">
-          Loading tasks...
-        </div>
+        <div v-if="loading" class="py-8 text-center text-muted-foreground">Loading tasks...</div>
 
         <div v-else-if="tasks.length === 0" class="py-8 text-center text-muted-foreground">
           No tasks found. Create your first task to get started!
         </div>
 
-        <div v-else class="divide-y mt-4">
+        <div v-else class="mt-4 divide-y">
           <div v-for="task in tasks" :key="task.id" class="py-4 first:pt-0">
             <div class="flex items-start justify-between space-x-4">
               <div class="flex items-start space-x-4">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   @click="toggleComplete(task)"
                   :class="task.completed ? 'text-green-500' : 'text-muted-foreground'"
                 >
@@ -102,23 +106,31 @@ onMounted(() => fetchTasks(filters.value))
                 </Button>
 
                 <div>
-                  <h3 class="font-medium" :class="{ 'line-through text-muted-foreground': task.completed }">
+                  <h3
+                    class="font-medium"
+                    :class="{ 'text-muted-foreground line-through': task.completed }"
+                  >
                     {{ task.title }}
                   </h3>
-                  <p class="mt-1 text-sm text-muted-foreground" :class="{ 'line-through': task.completed }">
+                  <p
+                    class="mt-1 text-sm text-muted-foreground"
+                    :class="{ 'line-through': task.completed }"
+                  >
                     {{ task.description }}
                   </p>
                   <div class="mt-2 flex items-center space-x-4 text-sm">
-                    <span :class="[
-                      'rounded-full px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 capitalize',
-                      getCategoryColor(task.category)
-                    ]">
+                    <span
+                      :class="[
+                        'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium capitalize',
+                        getCategoryColor(task.category),
+                      ]"
+                    >
                       <component :is="categoryIcons[task.category]" class="h-3.5 w-3.5" />
                       {{ task.category }}
                     </span>
 
-                    <span 
-                      class="flex items-center text-sm gap-1.5"
+                    <span
+                      class="flex items-center gap-1.5 text-sm"
                       :class="getDeadlineStatus(task.deadline, task.completed).class"
                     >
                       <Clock class="h-3.5 w-3.5" />
@@ -142,11 +154,11 @@ onMounted(() => fetchTasks(filters.value))
       </CardContent>
     </Card>
 
-    <TaskFormModal 
-      v-if="showTaskForm" 
-      :task="editingTask" 
-      @close="closeTaskForm" 
-      @save="handleSaveTask" 
+    <TaskFormModal
+      v-if="showTaskForm"
+      :task="editingTask"
+      @close="closeTaskForm"
+      @save="handleSaveTask"
     />
   </div>
 </template>

@@ -1,18 +1,18 @@
 export interface User {
-  id: number;
-  name: string;
-  email: string;
-  created_at: string;
-  updated_at: string;
+  id: number
+  name: string
+  email: string
+  created_at: string
+  updated_at: string
 }
 
 export interface Task {
-  id: number;
-  title: string;
-  description: string | null;
-  category: 'work' | 'personal' | 'urgent';
-  deadline: string;
-  completed: boolean;
+  id: number
+  title: string
+  description: string | null
+  category: 'work' | 'personal' | 'urgent'
+  deadline: string
+  completed: boolean
 }
 export interface TaskFilters {
   search?: string
